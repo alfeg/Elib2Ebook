@@ -1,13 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using Elib2Ebook.Extensions;
 using Elib2Ebook.Types.Book;
+using Microsoft.Extensions.FileProviders;
 
 namespace Elib2Ebook.Logic.Builders; 
 
-public abstract class BuilderBase {
+public abstract class BuilderBase
+{
+    public static IFileProvider FileProvider = new ManifestEmbeddedFileProvider(Assembly.GetExecutingAssembly());
+    
     /// <summary>
     /// Добавление автора книги
     /// </summary>

@@ -38,4 +38,4 @@ Code/\.idea/\.idea\.AllIn/\.idea/
 .idea
 */.idea/*
 **/logs/**
-
+.dist
