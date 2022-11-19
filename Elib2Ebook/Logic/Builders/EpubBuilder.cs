@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Enumeration;
 using System.Linq;
 using System.Threading.Tasks;
 using Elib2Ebook.Extensions;
@@ -36,7 +37,8 @@ public class EpubBuilder : BuilderBase {
     /// <param name="decodeText">Раскодированный текст</param>
     /// <returns></returns>
     private string ApplyPattern(string title, string decodeText) {
-        return _pattern.Replace("{title}", title.CleanInvalidXmlChars().ReplaceNewLine()).Replace("{body}", decodeText.HtmlDecode().CleanInvalidXmlChars()).AsXHtmlDoc().AsString();
+        return _pattern.Replace("{title}", title.CleanInvalidXmlChars().ReplaceNewLine()).Replace("{body}", 
+            decodeText.HtmlDecode().CleanInvalidXmlChars()).AsXHtmlDoc().AsString();
     }
 
     /// <summary>
@@ -91,17 +93,18 @@ public class EpubBuilder : BuilderBase {
     /// <param name="searchPattern">Шаблон поиска файлов</param>
     /// <returns></returns>
     public override BuilderBase WithFiles(string directory, string searchPattern) {
-        foreach (var file in Directory.GetFiles(directory, searchPattern)) {
-            var fileName = Path.GetFileName(file);
-            var type = file.EndsWith(".ttf") ? 
+        foreach (var file in FileProvider.GetFiles(directory, searchPattern))
+        {
+            var fileName = Path.GetFileName(file.Name);
+            var type = file.Name.EndsWith(".ttf") ? 
                 EpubContentType.FontTruetype : 
-                file.EndsWith(".css") ? 
+                file.Name.EndsWith(".css") ? 
                     EpubContentType.Css : 
                     throw new Exception($"Неизвестный тип файла {fileName}");
             
-            _writer.AddFile(fileName, File.ReadAllBytes(file), type);
+            _writer.AddFile(fileName, file.ReadAllBytes(), type);
         }
-            
+      
         return this;
     }
 
